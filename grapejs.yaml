@@ -1,0 +1,27 @@
+version: "3.7"
+
+services:
+  grapesjs:
+    image: grapesjs-app:versaobuild1
+    ports:
+      - "8080:8080"
+    networks:
+      - minha_rede
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.grapesjs.rule=Host(`grapesjs.seudominio.com`)
+        - traefik.http.routers.grapesjs.entrypoints=websecure
+        - traefik.http.routers.grapesjs.tls.certresolver=letsencryptresolver
+        - traefik.http.services.grapesjs.loadbalancer.server.port=8080
+        - traefik.http.services.grapesjs.loadbalancer.passHostHeader=true
+
+networks:
+  minha_rede:
+    external: true
+    name: minha_rede
